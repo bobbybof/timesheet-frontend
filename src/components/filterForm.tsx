@@ -20,7 +20,7 @@ export default function FilterForm() {
 	const options = useMemo(
 		() =>
 			data?.map((project) => ({
-				value: project.name.toLowerCase().replace(' ', '-'),
+				value: project.name.replace(' ', '-'),
 				label: project.name,
 			})),
 		[data],
