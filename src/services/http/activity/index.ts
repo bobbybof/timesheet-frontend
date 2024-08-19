@@ -2,6 +2,7 @@ import { Activity, ActivityRequestBody } from '@/models/activity'
 import TIMESHEET_API from '@/constants/api_url'
 import axios from 'axios'
 import { parseDateToDateTimeIso } from '@/utils/helper'
+import { extendedDayjs } from '@/utils/dayjs_extend'
 
 export const getActivities = async ({
     projects,
@@ -12,12 +13,17 @@ export const getActivities = async ({
     projects?: string | null
     user_id?: number | null
 }) => {
-    console.log(projects)
     return axios
         .get(TIMESHEET_API.ACTIVITIES_URL, {
             params: { search, projects: projects?.split('-').join(' '), user_id },
         })
-        .then((res) => res.data.data as Activity[])
+        .then((res) => {
+            res.data.data.map(x => {
+                x['time_start'] = extendedDayjs(x.date_start).format('HH:mm')
+                x['time_end'] = extendedDayjs(x.date_end).format('HH:mm')
+            })
+            return res.data.data as Activity[]
+        })
 }
 
 export const postActivity = async (activity: Activity) => {
